@@ -1,0 +1,6 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "RC0805FR-072KL")(type "KiCad")(uri "/Users/hoangmai/Downloads/NEW_cw/R31/RC0805FR-072KL.kicad_sym")(options "")(descr ""))
+  (lib (name "Cosmic Watch Symbols")(type "KiCad")(uri "${KIPRJMOD}/Cosmic Watch Symbols.kicad_sym")(options "")(descr ""))
+  (lib (name "Cosmic Watch Symbols1")(type "KiCad")(uri "${KICAD9_SYMBOL_DIR}/Cosmic Watch Symbols.kicad_sym")(options "")(descr ""))
+)
