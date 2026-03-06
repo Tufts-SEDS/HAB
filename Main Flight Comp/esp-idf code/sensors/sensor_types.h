@@ -71,9 +71,9 @@ struct CompleteSnapshot
     EkfSnapshot ekf;
 };
 
-struct sensor_value
+struct SensorSample
 {
-    sensor_type type;
+    SensorType type;
     union
     {
         struct
@@ -94,10 +94,6 @@ struct sensor_value
             float accel[3], gyro[3], mag[3];
             float temp;
         } imu;
-        struct
-        {
-            float accel[3];
-        } accelerometerHG;
         struct
         {
             float temp_c;

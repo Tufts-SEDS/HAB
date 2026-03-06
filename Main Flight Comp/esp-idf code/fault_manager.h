@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 #include <cstddef>
 #include <climits>
@@ -6,6 +8,7 @@
 
 /*---------------------- Status / Fault Types ----------------------*/
 
+// Defines what went wrong with the specific function being called
 enum class Status : uint8_t
 {
     Ok = 0,
@@ -16,6 +19,7 @@ enum class Status : uint8_t
     InternalError
 };
 
+// Defines where in our pipeline went wrong
 enum class FaultClass : uint8_t
 {
     None = 0,
@@ -34,11 +38,12 @@ enum class Severity : uint8_t
     Critical
 };
 
+// Consolidates all the errors with our system
 struct FaultEvent
 {
-    FaultClass cls;
-    Severity sev;
-    Status st;
+    Status status;
+    FaultClass fclass;
+    Severity severity;
     uint16_t source_id; // module/sensor ID
 };
 
@@ -51,25 +56,14 @@ struct FaultEvent
 class FaultManager
 {
 public:
-    static void Report(const FaultEvent &evt) noexcept
+    static void Report(const FaultEvent &event) noexcept
     {
+        // for debugging purposes
         last_ = evt;
 
-        switch (evt.sev)
+        if (event.sev == Severity::Critical)
         {
-        case Severity::Critical:
-            ++critical_count_;
             EnterSafeState();
-            break;
-        case Severity::Major:
-            ++major_count_;
-            break;
-        case Severity::Minor:
-            ++minor_count_;
-            break;
-        case Severity::Info:
-        default:
-            break;
         }
 
         // debug log, rewrite to make write to local storage
@@ -82,9 +76,6 @@ public:
     }
 
     static FaultEvent Last() noexcept { return last_; }
-    static uint32_t CriticalCount() noexcept { return critical_count_; }
-    static uint32_t MajorCount() noexcept { return major_count_; }
-    static uint32_t MinorCount() noexcept { return minor_count_; }
 
 private:
     static void EnterSafeState() noexcept
@@ -97,11 +88,6 @@ private:
     }
 
     static bool safe_state_ = false;
-
-    static uint32_t critical_count_ = 0;
-    static uint32_t major_count_ = 0;
-    static uint32_t minor_count_ = 0;
-
     static FaultEvent last_{
         FaultClass::None, Severity::Info, Status::Ok, 0U, 0U};
 };
@@ -110,8 +96,9 @@ private:
 static inline Status ReportAndReturn(
     FaultClass cls, Severity sev, Status st, uint16_t src, uint32_t detail) noexcept
 {
-    FaultManager::Report(FaultEvent{cls, sev, st, src, detail});
-    return st;
+    FaultEvent fault = FaultEvent{cls, sev, st, src, detail};
+    FaultManager::Report(fault);
+    return fault;
 }
 
 // lightweight "Expected" type

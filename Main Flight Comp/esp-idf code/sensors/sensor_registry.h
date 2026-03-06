@@ -1,19 +1,34 @@
+/*---------------------- Sensor Registry ---------------------*/
+/*
+
+    Defines a registry that consolidates the initialization of
+    all the sensors
+
+*/
+/*------------------------------------------------------------*/
+
+#pragma once
+
+#define MAX_SENSORS 8
+
 #include <inttypes.h>
 #include <string_view>
 #include "sensor_types.h"
+#include "virtual_sensor.h"
 
-class VSensor
+class SensorRegistry
 {
 public:
-    virtual ~VSensor() = default;
-    virtual std::string_view name() const = 0;
-    virtual uint32_t id() const = 0;
-    virtual SensorType type() const = 0;
+    SensorRegistry();
+    ~SensorRegistry();
 
-    virtual sensor_status initialize() = 0;
-    virtual sensor_reading read() = 0;
+    bool addSensor(VSensor *sensor);
+    void initializeSensors();
+    uint8_t getNumSensors();
 
 private:
-    virtual void configure() = 0;
-    virtual void applyCorrections(sensor_value *data) = 0;
+    VSensor *sensors_[MAX_SENSORS];
+    uint8_t num_sensors_ = 0;
+    void configure() = 0;
+    void applyCorrections(sensor_value *data) = 0;
 };
