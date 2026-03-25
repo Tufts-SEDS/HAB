@@ -22,8 +22,8 @@ public:
     virtual uint32_t id() const = 0;
     virtual SensorType type() const = 0;
 
-    virtual sensor_status initialize() = 0;
-    virtual sensor_reading read() = 0;
+    virtual SensorStatus initialize() = 0;
+    virtual SensorSample read() = 0;
 
 private:
     virtual void configure() = 0;

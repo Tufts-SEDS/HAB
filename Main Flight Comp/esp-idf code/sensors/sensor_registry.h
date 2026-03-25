@@ -6,6 +6,7 @@
 
 */
 /*------------------------------------------------------------*/
+#include <vector>
 
 #pragma once
 
@@ -15,6 +16,7 @@
 #include <string_view>
 #include "sensor_types.h"
 #include "virtual_sensor.h"
+#include "event_def.h"
 
 class SensorRegistry
 {
@@ -29,6 +31,8 @@ public:
 private:
     VSensor *sensors_[MAX_SENSORS];
     uint8_t num_sensors_ = 0;
+    std::vector<SensorChecker> sensorCheckers_;
     void configure() = 0;
     void applyCorrections(sensor_value *data) = 0;
+    Event event;
 };

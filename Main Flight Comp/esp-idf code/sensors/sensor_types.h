@@ -16,8 +16,14 @@ enum class SensorStatus : uint8_t
     ErrBadHealth,
     ErrInit,
     ErrRead,
-    ErrCalib,
+    ErrCalibration,
     ErrTask
+};
+
+struct SensorChecker
+{
+    SensorType type;
+    SensorStatus status;
 };
 
 struct sensor_data_snapshot
@@ -67,7 +73,7 @@ struct EkfSnapshot
 
 struct CompleteSnapshot
 {
-    sensor_data_snapshot sensors;
+    sensor_data_snapshot data;
     EkfSnapshot ekf;
 };
 
