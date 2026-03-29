@@ -26,7 +26,7 @@ struct SensorChecker
     SensorStatus status;
 };
 
-struct sensor_data_snapshot
+struct SensorDataSnapshot
 {
     double baro_altitude;
     float baro_temp;
@@ -73,7 +73,7 @@ struct EkfSnapshot
 
 struct CompleteSnapshot
 {
-    sensor_data_snapshot data;
+    SensorDataSnapshot data;
     EkfSnapshot ekf;
 };
 

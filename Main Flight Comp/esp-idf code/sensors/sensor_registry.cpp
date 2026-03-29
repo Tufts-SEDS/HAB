@@ -1,3 +1,4 @@
+#include "fault_types.h"
 #include "sensor_registry.h"
 #include "sensor_types.h"
 
@@ -6,15 +7,21 @@ uint8_t SensorRegistry::getNumSensors()
     return num_sensors_;
 }
 
-bool SensorRegistry::addSensor(VSensor *sensor)
+Event<bool> SensorRegistry::addSensor(VSensor *sensor)
 {
     if (num_sensors_ >= MAX_SENSORS)
-        return false;
+    {
+        FaultEvent fault{Status::OutOfRange, FaultClass::Configuration, Severity::Major, 0U, true};
+        Event<bool> evt{fault, false};
+        return evt;
+    }
     sensors_[num_sensors_++] = sensor;
-    return true;
+    FaultEvent fault{0U, 0U, 0U, 0U, false};
+    Event<bool> evt{fault, true};
+    return evt;
 }
 
-Event SensorRegistry::initializeSensors()
+Event<std::vector<SensorChecker>> SensorRegistry::initializeSensors()
 {
     /* Clear initially for sanity sake */
     sensorCheckers_.clear();
@@ -24,7 +31,7 @@ Event SensorRegistry::initializeSensors()
         /* Initialize hardware */
         SensorStatus initStat = sensors_[i]->initialize();
 
-        /* Prepare Checker Object for this sensor */
+        /* Prepare Checker struct for this sensor */
         SensorChecker currentChecker;
         currentChecker.type = sensors_[i]->type();
 
@@ -38,7 +45,7 @@ Event SensorRegistry::initializeSensors()
 
         /* Create Thread Instance */
         BaseType_t xReturned = xTaskCreate(
-            VSensor::read,
+            sensors_[i]->vreadTask, // TODO: this might be a bug
             sensors_[i]->name(),
             2048,
             static_cast<void *>(sensors[i]), /* Pass specific Sensor to Thread */
@@ -52,5 +59,7 @@ Event SensorRegistry::initializeSensors()
         sensorCheckers_.push_back(currentChecker);
     }
 
-    return Event<SensorChecker>(sensorCheckers_);
+    FaultEvent fault{0U, 0U, 0U, 0U, false};
+    Event<std::vector<SensorChecker>> evt{fault, sensorCheckers_};
+    return evt;
 }

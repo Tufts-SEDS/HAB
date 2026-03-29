@@ -34,5 +34,4 @@ private:
     std::vector<SensorChecker> sensorCheckers_;
     void configure() = 0;
     void applyCorrections(sensor_value *data) = 0;
-    Event event;
 };

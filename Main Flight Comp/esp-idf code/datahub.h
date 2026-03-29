@@ -5,13 +5,8 @@
 #include "sensor_manager.h"
 #include "fault_manager.h"
 
-class Datahub
+struct Datahub
 {
-public:
-    Datahub();
-    ~Datahub();
-
-private:
     // this is just gonna be a shit ton of atomics tbh
     // we have two copies of each variable bc of threading, we have one active
     //      atomic and one shadow atomic at any given time. while one is updating,
